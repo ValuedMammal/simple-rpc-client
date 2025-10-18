@@ -1,0 +1,12 @@
+[package]
+name = "simple_rpc_client"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+corepc-client = { version = "0.10.0", features = ["client-sync"] }
+jsonrpc = { version = "0.18.0", all-features = true }
+
+[dev-dependencies]
+anyhow = "1"
+lazy_static = "1.5.0"
