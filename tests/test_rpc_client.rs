@@ -25,3 +25,24 @@ fn test_get_block_hash() {
     let res = CLIENT.get_best_block_hash().unwrap();
     dbg!(res);
 }
+
+#[test]
+fn test_get_block_header() {
+    let hash = CLIENT.get_best_block_hash().unwrap();
+    let res = CLIENT.get_block_header_verbose(&hash).unwrap();
+    dbg!(res);
+}
+
+#[test]
+fn test_get_block_filter() {
+    let hash = CLIENT.get_best_block_hash().unwrap();
+    let res = CLIENT.get_block_filter(&hash).unwrap();
+    dbg!(res);
+}
+
+#[test]
+fn test_get_block() {
+    let hash = CLIENT.get_best_block_hash().unwrap();
+    let res = CLIENT.get_block(&hash).unwrap();
+    dbg!(res);
+}
