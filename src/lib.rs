@@ -3,6 +3,9 @@
 mod client;
 pub use client::*;
 
+pub use corepc_client;
+pub use jsonrpc;
+
 #[cfg(test)]
 mod tests {
     // use super::*;
