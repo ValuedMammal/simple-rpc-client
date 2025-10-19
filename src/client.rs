@@ -59,7 +59,7 @@ impl Client {
         T: for<'de> serde::Deserialize<'de>,
     {
         let raw = serde_json::value::to_raw_value(args)?;
-        let request = self.inner.build_request(&method, Some(&*raw));
+        let request = self.inner.build_request(method, Some(&*raw));
         let resp = self.inner.send_request(request)?;
 
         Ok(resp.result()?)
