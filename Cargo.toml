@@ -10,3 +10,9 @@ jsonrpc = { version = "0.18.0", all-features = true }
 [dev-dependencies]
 anyhow = "1"
 lazy_static = "1.5.0"
+
+[[example]]
+name = "client"
+
+[[example]]
+name = "transport"
