@@ -71,7 +71,7 @@ impl Client {
 
 // `bitcoind` RPC methods
 impl Client {
-    /// Get best block hash.
+    /// Get block count.
     pub fn get_block_count(&self) -> Result<u32, Error> {
         let res: i32 = self.call("getblockcount", &[])?;
         Ok(res.try_into().unwrap())
