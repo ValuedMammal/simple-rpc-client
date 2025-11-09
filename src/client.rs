@@ -83,6 +83,12 @@ impl Client {
         Ok(res.parse()?)
     }
 
+    /// Get block hash by `height`.
+    pub fn get_block_hash(&self, height: u32) -> Result<BlockHash, Error> {
+        let res: String = self.call("getblockhash", &[json!(height)])?;
+        Ok(res.parse()?)
+    }
+
     /// Get block header (verbose).
     pub fn get_block_header_verbose(
         &self,
