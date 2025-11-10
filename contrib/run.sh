@@ -21,7 +21,7 @@ path=$1
 killall bitcoind > /dev/null || true
 
 # Set environment variables used for integration testing.
-export RPC_URL="127.0.0.1:18443"
+export RPC_URL="http://127.0.0.1:18443"
 export RPC_COOKIE="${path}/regtest/.cookie"
 
 # Clear data directory.
