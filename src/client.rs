@@ -1,11 +1,14 @@
 //! [`Client`].
 
-use bitcoin::{Block, BlockHash};
+use bitcoin::{Address, Amount, Block, BlockHash, Transaction, Txid};
 
 use corepc_client::bitcoin;
 use corepc_client::client_sync::Error;
 use corepc_client::types::model;
-use corepc_client::types::v29::{GetBlockFilter, GetBlockHeaderVerbose, GetBlockVerboseZero};
+use corepc_client::types::v29::{
+    GetBlockFilter, GetBlockHeaderVerbose, GetBlockVerboseOne, GetBlockVerboseZero, GetRawMempool,
+    GetRawTransaction, SendToAddress,
+};
 use jsonrpc::Transport;
 use jsonrpc::{serde, serde_json};
 use serde_json::json;
@@ -108,5 +111,30 @@ impl Client {
     pub fn get_block(&self, hash: &BlockHash) -> Result<Block, Error> {
         let res: GetBlockVerboseZero = self.call("getblock", &[json!(hash), json!(0)])?;
         Ok(res.block().unwrap())
+    }
+
+    /// Get block verbose.
+    pub fn get_block_verbose(&self, hash: &BlockHash) -> Result<model::GetBlockVerboseOne, Error> {
+        let res: GetBlockVerboseOne = self.call("getblock", &[json!(hash), json!(1)])?;
+        Ok(res.into_model().unwrap())
+    }
+
+    /// Get raw mempool.
+    pub fn get_raw_mempool(&self) -> Result<Vec<Txid>, Error> {
+        let res: GetRawMempool = self.call("getrawmempool", &[])?;
+        Ok(res.into_model().unwrap().0)
+    }
+
+    /// Send to address.
+    pub fn send_to_address(&self, address: &Address, amount: Amount) -> Result<Txid, Error> {
+        let res: SendToAddress =
+            self.call("sendtoaddress", &[json!(address), json!(amount.to_btc())])?;
+        Ok(res.txid()?)
+    }
+
+    /// Get raw transaction.
+    pub fn get_raw_transaction(&self, txid: &Txid) -> Result<Transaction, Error> {
+        let res: GetRawTransaction = self.call("getrawtransaction", &[json!(txid)])?;
+        Ok(res.into_model().unwrap().0)
     }
 }
