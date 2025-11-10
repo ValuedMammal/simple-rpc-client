@@ -2,7 +2,7 @@
 
 use std::fmt;
 
-use corepc_client::types::v29::{GetBlockFilterError, GetBlockHeaderVerboseError};
+use corepc_client::types::v29::{GetBlockFilterError, GetBlockHeaderVerboseError, GetBlockVerboseOneError};
 use jsonrpc::serde_json;
 
 #[derive(Debug)]
@@ -18,6 +18,9 @@ pub enum Error {
 
     /// GetBlockHeaderVerboseError
     CorepcHeaderVerbose(GetBlockHeaderVerboseError),
+
+    /// GetBlock Verbose error
+    CorepcBlockVerbose(GetBlockVerboseOneError),
 
     /// Get Block Filter Error
     CorepcFilter(GetBlockFilterError),
@@ -40,6 +43,7 @@ impl fmt::Display for Error {
             Error::JsonRpc(e) => write!(f, "JSON-RPC error: {e}"),
             Error::CorepcHeaderVerbose(e) => write!(f, "Block Header Verbose error: {e}"),
             Error::CorepcFilter(e) => write!(f, "Block Filter error: {e}"),
+            Error::CorepcBlockVerbose(e) => write!(f, "Block verbose error: {e}"),
             Error::InvalidResponse(msg) => write!(f, "Invalid response: {msg}"),
             Error::Json(e) => write!(f, "Json error: {e}"),
             Error::IntConversion(e) => write!(f, "Integer conversion error: {e}"),
@@ -56,6 +60,7 @@ impl std::error::Error for Error {
             Error::CorepcHeaderVerbose(e) => Some(e),
             Error::CorepcFilter(e) => Some(e),
             Error::Json(e) => Some(e),
+            Error::CorepcBlockVerbose(e) => Some(e),
             Error::IntConversion(e) => Some(e),
             _ => None,
         }
@@ -77,6 +82,12 @@ impl From<corepc_client::bitcoin::hex::HexToArrayError> for Error {
 impl From<corepc_client::bitcoin::consensus::encode::FromHexError> for Error {
     fn from(e: corepc_client::bitcoin::consensus::encode::FromHexError) -> Self {
         Error::FromHex(e)
+    }
+}
+
+impl From<GetBlockVerboseOneError> for Error {
+    fn from(e: GetBlockVerboseOneError) -> Self {
+        Error::CorepcBlockVerbose(e)
     }
 }
 

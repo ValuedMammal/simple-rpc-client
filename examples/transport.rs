@@ -21,5 +21,5 @@ fn main() {
     let client = Client::with_transport(transport);
 
     let res = client.get_best_block_hash().unwrap();
-    println!("{:#?}", res);
+    println!("{res:#?}");
 }
