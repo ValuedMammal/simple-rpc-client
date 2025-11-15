@@ -9,8 +9,15 @@ fn main() {
     let path = std::path::PathBuf::from_str(&cookie_file).unwrap();
     let cookie = std::fs::read_to_string(path).unwrap();
 
-    let client = simplerpc::Client::new_cookie_auth(URL, cookie);
-    let res = client.get_best_block_hash().unwrap();
+    let transport = jsonrpc::simple_http::Builder::new()
+        .url(URL)
+        .expect("URL check failed")
+        .timeout(std::time::Duration::from_secs(30))
+        .cookie_auth(cookie)
+        .build();
 
+    let client = simplerpc::Client::with_transport(transport);
+
+    let res = client.get_best_block_hash().unwrap();
     println!("{:#?}", res);
 }
