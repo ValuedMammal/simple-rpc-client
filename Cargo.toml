@@ -5,7 +5,7 @@ edition = "2024"
 
 [dependencies]
 corepc-client = { version = "0.10.0", features = ["client-sync"] }
-jsonrpc = { version = "0.18.0", all-features = true }
+jsonrpc = { version = "0.18.0", default-features = false, features = ["simple_http", "minreq_http"] }
 
 [dev-dependencies]
 anyhow = "1"
