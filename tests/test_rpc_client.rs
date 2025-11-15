@@ -3,7 +3,7 @@ use std::str::FromStr;
 
 // Setup RPC client.
 lazy_static::lazy_static! {
-    static ref CLIENT: simple_rpc_client::Client = {
+    static ref CLIENT: simplerpc::Client = {
         let url = std::env::var("RPC_URL").unwrap();
         let path = std::env::var("RPC_COOKIE").unwrap();
         let auth = std::fs::read_to_string(path).unwrap();
@@ -13,7 +13,7 @@ lazy_static::lazy_static! {
             .cookie_auth(auth)
             .build();
 
-        simple_rpc_client::Client::with_transport(transport)
+        simplerpc::Client::with_transport(transport)
     };
 }
 

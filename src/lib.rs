@@ -1,4 +1,4 @@
-//! `simple_rpc_client`.
+//! `simplerpc`.
 
 mod client;
 pub use client::*;

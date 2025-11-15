@@ -1,7 +1,5 @@
 use std::str::FromStr;
 
-use simple_rpc_client::Client;
-
 /// RPC url.
 const URL: &str = "http://127.0.0.1:38332";
 const COOKIE_FILE: &str = ".bitcoin/signet/.cookie";
@@ -18,7 +16,7 @@ fn main() {
         .cookie_auth(cookie)
         .build();
 
-    let client = Client::with_transport(transport);
+    let client = simplerpc::Client::with_transport(transport);
 
     let res = client.get_best_block_hash().unwrap();
     println!("{:#?}", res);

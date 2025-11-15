@@ -1,5 +1,5 @@
 [package]
-name = "simple_rpc_client"
+name = "simplerpc"
 version = "0.1.0"
 edition = "2024"
 

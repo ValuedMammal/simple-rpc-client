@@ -1,2 +1,3 @@
-# simple-rpc-client
-Bitcoin Core RPC client library
+# `simplerpc`
+
+A simple Bitcoin Core RPC client library
