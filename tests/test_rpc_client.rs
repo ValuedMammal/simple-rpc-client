@@ -87,3 +87,23 @@ fn test_get_raw_transaction() {
     let res = CLIENT.get_raw_transaction(&txid).unwrap();
     dbg!(res);
 }
+
+#[test]
+fn test_get_descriptor_info() {
+    let desc_str = "tr(0a1975ec57d1dafe78c6941e56cbc6b3972a12c2339d2c199ba88a32d290bdbb)#asff8576";
+    let res = CLIENT.get_descriptor_info(desc_str).unwrap();
+    dbg!(res);
+}
+
+#[test]
+fn test_import_descriptors() {
+    use simplerpc::types::ImportDescriptorsRequest;
+    let request = ImportDescriptorsRequest {
+        desc: "tr(cUZeQ1QvqskvASz81VeyRRrs7YfGfQbMqtyU55efWegJzkP6hpTP)#jqscf30c".to_string(),
+        timestamp: std::time::UNIX_EPOCH.elapsed().unwrap().as_secs(),
+        ..Default::default()
+    };
+    let resp = &CLIENT.import_descriptors(&[request]).unwrap()[0];
+    dbg!(resp);
+    assert!(resp.success);
+}

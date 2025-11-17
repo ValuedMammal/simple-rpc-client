@@ -6,12 +6,14 @@ use corepc_client::bitcoin;
 use corepc_client::client_sync::Error;
 use corepc_client::types::model;
 use corepc_client::types::v29::{
-    GetBlockFilter, GetBlockHeaderVerbose, GetBlockVerboseOne, GetBlockVerboseZero, GetRawMempool,
-    GetRawTransaction, SendToAddress,
+    GetBlockFilter, GetBlockHeaderVerbose, GetBlockVerboseOne, GetBlockVerboseZero,
+    GetDescriptorInfo, GetRawMempool, GetRawTransaction, SendToAddress,
 };
 use jsonrpc::Transport;
 use jsonrpc::{serde, serde_json};
 use serde_json::json;
+
+use crate::types::{ImportDescriptorsRequest, ImportDescriptorsResponse};
 
 // RPC Client.
 #[derive(Debug)]
@@ -136,5 +138,18 @@ impl Client {
     pub fn get_raw_transaction(&self, txid: &Txid) -> Result<Transaction, Error> {
         let res: GetRawTransaction = self.call("getrawtransaction", &[json!(txid)])?;
         Ok(res.into_model().unwrap().0)
+    }
+
+    /// Get descriptor info.
+    pub fn get_descriptor_info(&self, descriptor: &str) -> Result<GetDescriptorInfo, Error> {
+        self.call("getdescriptorinfo", &[json!(descriptor)])
+    }
+
+    /// Import descriptors.
+    pub fn import_descriptors(
+        &self,
+        requests: &[ImportDescriptorsRequest],
+    ) -> Result<Vec<ImportDescriptorsResponse>, Error> {
+        self.call("importdescriptors", &[json!(requests)])
     }
 }
