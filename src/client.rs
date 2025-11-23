@@ -1,5 +1,9 @@
 //! [`Client`].
 
+use std::fs::File;
+use std::io::{BufRead, BufReader};
+use std::path::PathBuf;
+
 use bitcoin::{Address, Amount, Block, BlockHash, Transaction, Txid};
 
 use corepc_client::bitcoin;
@@ -22,7 +26,42 @@ pub struct Client {
     inner: jsonrpc::Client,
 }
 
+/// The way of authenticating to the JSON-RPC server.
+#[derive(Debug, Clone)]
+pub enum Auth {
+    /// User and password
+    UserPass(String, String),
+    /// Path to cookie file
+    CookieFile(PathBuf),
+}
+
+impl Auth {
+    /// Get the user:pass credentials from this [`Auth`].
+    fn get_user_pass(self) -> Result<(String, String), Error> {
+        match self {
+            Auth::UserPass(user, pass) => Ok((user, pass)),
+            Auth::CookieFile(path) => {
+                let line = BufReader::new(File::open(path)?)
+                    .lines()
+                    .next()
+                    .ok_or(Error::InvalidCookieFile)??;
+                let colon = line.find(':').ok_or(Error::InvalidCookieFile)?;
+
+                Ok((line[..colon].to_string(), line[colon + 1..].to_string()))
+            }
+        }
+    }
+}
+
 impl Client {
+    /// Creates a `minreq` HTTP client with `user` and `pass`.
+    ///
+    /// This can fail if we are unable to read the configured [`Auth::CookieFile`].
+    pub fn new(url: &str, auth: Auth) -> Result<Self, Error> {
+        let (user, pass) = auth.get_user_pass()?;
+        Ok(Self::new_user_pass(url, user, Some(pass)))
+    }
+
     /// Creates a `minreq` HTTP client with `user` and `pass`.
     pub fn new_user_pass(url: &str, user: String, pass: Option<String>) -> Self {
         let transport = jsonrpc::http::minreq_http::Builder::new()
