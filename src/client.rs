@@ -54,7 +54,7 @@ impl Auth {
 }
 
 impl Client {
-    /// Creates a `minreq` HTTP client with `user` and `pass`.
+    /// Creates a `simple_http` client with `user` and `pass`.
     ///
     /// This can fail if we are unable to read the configured [`Auth::CookieFile`].
     pub fn new(url: &str, auth: Auth) -> Result<Self, Error> {
@@ -62,13 +62,13 @@ impl Client {
         Ok(Self::new_user_pass(url, user, Some(pass)))
     }
 
-    /// Creates a `minreq` HTTP client with `user` and `pass`.
+    /// Creates a `simple_http` client with `user` and `pass`.
     pub fn new_user_pass(url: &str, user: String, pass: Option<String>) -> Self {
-        let transport = jsonrpc::http::minreq_http::Builder::new()
+        let transport = jsonrpc::simple_http::Builder::new()
             .url(url)
             .expect("URL check failed")
             .timeout(std::time::Duration::from_secs(60))
-            .basic_auth(user, pass)
+            .auth(user, pass)
             .build();
 
         Self {
@@ -76,9 +76,9 @@ impl Client {
         }
     }
 
-    /// Creates a `minreq` HTTP client with `cookie` authentication.
+    /// Creates a `simple_http` client with `cookie` authentication.
     pub fn new_cookie_auth(url: &str, cookie: String) -> Self {
-        let transport = jsonrpc::http::minreq_http::Builder::new()
+        let transport = jsonrpc::simple_http::Builder::new()
             .url(url)
             .expect("URL check failed")
             .timeout(std::time::Duration::from_secs(60))
