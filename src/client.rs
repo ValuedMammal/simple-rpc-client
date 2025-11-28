@@ -9,15 +9,20 @@ use bitcoin::{Address, Amount, Block, BlockHash, Transaction, Txid};
 use corepc_client::bitcoin;
 use corepc_client::client_sync::Error;
 use corepc_client::types::model;
+#[allow(unused_imports)]
+use corepc_client::types::v29;
 use corepc_client::types::v29::{
-    GetBlockFilter, GetBlockHeaderVerbose, GetBlockVerboseOne, GetBlockVerboseZero,
-    GetDescriptorInfo, GetRawMempool, GetRawTransaction, SendToAddress,
+    GetBlockFilter, GetBlockVerboseOne, GetBlockVerboseZero, GetDescriptorInfo, GetRawMempool,
+    GetRawTransaction, SendToAddress,
 };
 use jsonrpc::Transport;
 use jsonrpc::{serde, serde_json};
 use serde_json::json;
 
 use crate::types::{ImportDescriptorsRequest, ImportDescriptorsResponse};
+
+#[cfg(feature = "28_0")]
+pub mod v28;
 
 // RPC Client.
 #[derive(Debug)]
@@ -134,11 +139,12 @@ impl Client {
     }
 
     /// Get block header (verbose).
+    #[cfg(not(feature = "28_0"))]
     pub fn get_block_header_verbose(
         &self,
         hash: &BlockHash,
     ) -> Result<model::GetBlockHeaderVerbose, Error> {
-        let res: GetBlockHeaderVerbose = self.call("getblockheader", &[json!(hash)])?;
+        let res: v29::GetBlockHeaderVerbose = self.call("getblockheader", &[json!(hash)])?;
         Ok(res.into_model().unwrap())
     }
 
@@ -155,6 +161,7 @@ impl Client {
     }
 
     /// Get block verbose.
+    #[cfg(not(feature = "28_0"))]
     pub fn get_block_verbose(&self, hash: &BlockHash) -> Result<model::GetBlockVerboseOne, Error> {
         let res: GetBlockVerboseOne = self.call("getblock", &[json!(hash), json!(1)])?;
         Ok(res.into_model().unwrap())
