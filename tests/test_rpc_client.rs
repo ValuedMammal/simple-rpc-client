@@ -4,16 +4,10 @@ use std::str::FromStr;
 // Setup RPC client.
 lazy_static::lazy_static! {
     static ref CLIENT: simplerpc::Client = {
-        let url = std::env::var("RPC_URL").unwrap();
-        let path = std::env::var("RPC_COOKIE").unwrap();
-        let auth = std::fs::read_to_string(path).unwrap();
-        let transport = jsonrpc::http::simple_http::Builder::new()
-            .url(&url)
-            .unwrap()
-            .cookie_auth(auth)
-            .build();
-
-        simplerpc::Client::with_transport(transport)
+        let url = std::env::var("RPC_URL").expect("missing RPC_URL");
+        let cookie_file = std::env::var("RPC_COOKIE").expect("missing RPC_COOKIE");
+        let auth = simplerpc::Auth::CookieFile(cookie_file.into());
+        simplerpc::Client::new(&url, auth).expect("failed to create RPC Client")
     };
 }
 
