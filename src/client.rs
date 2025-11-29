@@ -167,11 +167,6 @@ impl Client {
         Ok(res.into_model().unwrap().0)
     }
 
-    /// Get descriptor info.
-    pub fn get_descriptor_info(&self, descriptor: &str) -> Result<v29::GetDescriptorInfo, Error> {
-        self.call("getdescriptorinfo", &[json!(descriptor)])
-    }
-
     /// Import descriptors.
     pub fn import_descriptors(
         &self,
@@ -197,5 +192,10 @@ impl Client {
     pub fn get_block_verbose(&self, hash: &BlockHash) -> Result<GetBlockVerboseOne, Error> {
         let res: v29::GetBlockVerboseOne = self.call("getblock", &[json!(hash), json!(1)])?;
         Ok(res.into_model().unwrap())
+    }
+
+    /// Get descriptor info.
+    pub fn get_descriptor_info(&self, descriptor: &str) -> Result<v29::GetDescriptorInfo, Error> {
+        self.call("getdescriptorinfo", &[json!(descriptor)])
     }
 }

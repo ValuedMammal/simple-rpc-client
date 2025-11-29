@@ -24,4 +24,9 @@ impl Client {
         let res: v28::GetBlockVerboseOne = self.call("getblock", &[json!(hash), json!(1)])?;
         Ok(res.into_model().unwrap())
     }
+
+    /// Get descriptor info.
+    pub fn get_descriptor_info(&self, descriptor: &str) -> Result<v28::GetDescriptorInfo, Error> {
+        self.call("getdescriptorinfo", &[json!(descriptor)])
+    }
 }
