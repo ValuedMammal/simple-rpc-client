@@ -1,5 +1,7 @@
 //! [`Client`].
 
+#![allow(unused_imports)]
+
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::PathBuf;
@@ -8,13 +10,8 @@ use bitcoin::{Address, Amount, Block, BlockHash, Transaction, Txid};
 
 use corepc_client::bitcoin;
 use corepc_client::client_sync::Error;
-use corepc_client::types::model;
-#[allow(unused_imports)]
+use corepc_client::types::model::{GetBlockFilter, GetBlockHeaderVerbose, GetBlockVerboseOne};
 use corepc_client::types::v29;
-use corepc_client::types::v29::{
-    GetBlockFilter, GetBlockVerboseOne, GetBlockVerboseZero, GetDescriptorInfo, GetRawMempool,
-    GetRawTransaction, SendToAddress,
-};
 use jsonrpc::Transport;
 use jsonrpc::{serde, serde_json};
 use serde_json::json;
@@ -138,56 +135,40 @@ impl Client {
         Ok(res.parse()?)
     }
 
-    /// Get block header (verbose).
-    #[cfg(not(feature = "28_0"))]
-    pub fn get_block_header_verbose(
-        &self,
-        hash: &BlockHash,
-    ) -> Result<model::GetBlockHeaderVerbose, Error> {
-        let res: v29::GetBlockHeaderVerbose = self.call("getblockheader", &[json!(hash)])?;
-        Ok(res.into_model().unwrap())
-    }
-
     /// Get block filter.
-    pub fn get_block_filter(&self, hash: &BlockHash) -> Result<model::GetBlockFilter, Error> {
-        let res: GetBlockFilter = self.call("getblockfilter", &[json!(hash)])?;
+    pub fn get_block_filter(&self, hash: &BlockHash) -> Result<GetBlockFilter, Error> {
+        let res: v29::GetBlockFilter = self.call("getblockfilter", &[json!(hash)])?;
         Ok(res.into_model().unwrap())
     }
 
     /// Get block.
     pub fn get_block(&self, hash: &BlockHash) -> Result<Block, Error> {
-        let res: GetBlockVerboseZero = self.call("getblock", &[json!(hash), json!(0)])?;
+        use v29::GetBlockVerboseZero as GetBlock;
+        let res: GetBlock = self.call("getblock", &[json!(hash), json!(0)])?;
         Ok(res.block().unwrap())
-    }
-
-    /// Get block verbose.
-    #[cfg(not(feature = "28_0"))]
-    pub fn get_block_verbose(&self, hash: &BlockHash) -> Result<model::GetBlockVerboseOne, Error> {
-        let res: GetBlockVerboseOne = self.call("getblock", &[json!(hash), json!(1)])?;
-        Ok(res.into_model().unwrap())
     }
 
     /// Get raw mempool.
     pub fn get_raw_mempool(&self) -> Result<Vec<Txid>, Error> {
-        let res: GetRawMempool = self.call("getrawmempool", &[])?;
+        let res: v29::GetRawMempool = self.call("getrawmempool", &[])?;
         Ok(res.into_model().unwrap().0)
     }
 
     /// Send to address.
     pub fn send_to_address(&self, address: &Address, amount: Amount) -> Result<Txid, Error> {
-        let res: SendToAddress =
+        let res: v29::SendToAddress =
             self.call("sendtoaddress", &[json!(address), json!(amount.to_btc())])?;
         Ok(res.txid()?)
     }
 
     /// Get raw transaction.
     pub fn get_raw_transaction(&self, txid: &Txid) -> Result<Transaction, Error> {
-        let res: GetRawTransaction = self.call("getrawtransaction", &[json!(txid)])?;
+        let res: v29::GetRawTransaction = self.call("getrawtransaction", &[json!(txid)])?;
         Ok(res.into_model().unwrap().0)
     }
 
     /// Get descriptor info.
-    pub fn get_descriptor_info(&self, descriptor: &str) -> Result<GetDescriptorInfo, Error> {
+    pub fn get_descriptor_info(&self, descriptor: &str) -> Result<v29::GetDescriptorInfo, Error> {
         self.call("getdescriptorinfo", &[json!(descriptor)])
     }
 
@@ -197,5 +178,24 @@ impl Client {
         requests: &[ImportDescriptorsRequest],
     ) -> Result<Vec<ImportDescriptorsResponse>, Error> {
         self.call("importdescriptors", &[json!(requests)])
+    }
+}
+
+#[cfg(not(feature = "28_0"))]
+impl Client {
+    /// Get block header (verbose).
+    pub fn get_block_header_verbose(
+        &self,
+        hash: &BlockHash,
+    ) -> Result<GetBlockHeaderVerbose, Error> {
+        let res: v29::GetBlockHeaderVerbose = self.call("getblockheader", &[json!(hash)])?;
+        Ok(res.into_model().unwrap())
+    }
+
+    /// Get block verbose.
+    #[cfg(not(feature = "28_0"))]
+    pub fn get_block_verbose(&self, hash: &BlockHash) -> Result<GetBlockVerboseOne, Error> {
+        let res: v29::GetBlockVerboseOne = self.call("getblock", &[json!(hash), json!(1)])?;
+        Ok(res.into_model().unwrap())
     }
 }
