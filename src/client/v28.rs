@@ -3,13 +3,19 @@
 use bitcoin::BlockHash;
 use corepc_client::bitcoin;
 use corepc_client::client_sync::Error;
-use corepc_client::types::model::{GetBlockHeaderVerbose, GetBlockVerboseOne};
+use corepc_client::types::model::{GetBlockHeaderVerbose, GetBlockVerboseOne, GetBlockchainInfo};
 use corepc_client::types::v28;
 
 use super::Client;
 use super::json;
 
 impl Client {
+    /// Get blockchain info.
+    pub fn get_blockchain_info(&self) -> Result<GetBlockchainInfo, Error> {
+        let res: v28::GetBlockchainInfo = self.call("getblockchaininfo", &[])?;
+        Ok(res.into_model().unwrap())
+    }
+
     /// Get block header (verbose).
     pub fn get_block_header_verbose(
         &self,

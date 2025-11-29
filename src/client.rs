@@ -10,7 +10,9 @@ use bitcoin::{Address, Amount, Block, BlockHash, Transaction, Txid};
 
 use corepc_client::bitcoin;
 use corepc_client::client_sync::Error;
-use corepc_client::types::model::{GetBlockFilter, GetBlockHeaderVerbose, GetBlockVerboseOne};
+use corepc_client::types::model::{
+    GetBlockFilter, GetBlockHeaderVerbose, GetBlockVerboseOne, GetBlockchainInfo,
+};
 use corepc_client::types::v29;
 use jsonrpc::Transport;
 use jsonrpc::{serde, serde_json};
@@ -178,6 +180,12 @@ impl Client {
 
 #[cfg(not(feature = "28_0"))]
 impl Client {
+    /// Get blockchain info.
+    pub fn get_blockchain_info(&self) -> Result<GetBlockchainInfo, Error> {
+        let res: v29::GetBlockchainInfo = self.call("getblockchaininfo", &[])?;
+        Ok(res.into_model().unwrap())
+    }
+
     /// Get block header (verbose).
     pub fn get_block_header_verbose(
         &self,
@@ -188,7 +196,6 @@ impl Client {
     }
 
     /// Get block verbose.
-    #[cfg(not(feature = "28_0"))]
     pub fn get_block_verbose(&self, hash: &BlockHash) -> Result<GetBlockVerboseOne, Error> {
         let res: v29::GetBlockVerboseOne = self.call("getblock", &[json!(hash), json!(1)])?;
         Ok(res.into_model().unwrap())

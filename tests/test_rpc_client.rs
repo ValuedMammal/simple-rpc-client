@@ -18,6 +18,12 @@ fn test_get_block_count() {
 }
 
 #[test]
+fn test_get_blockchain_info() {
+    let res = CLIENT.get_blockchain_info().unwrap();
+    dbg!(res);
+}
+
+#[test]
 fn test_get_block_hash() {
     let res = CLIENT.get_block_hash(0).unwrap();
     dbg!(res);
