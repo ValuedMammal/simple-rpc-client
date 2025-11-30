@@ -1,4 +1,37 @@
+use bitcoin::bip158;
+use corepc_client::bitcoin;
+use corepc_client::types::v19::GetBlockFilterError;
 use serde::{Deserialize, Serialize};
+
+/// Response to `getblockfilter`.
+#[derive(Debug, Clone, PartialEq, Deserialize)]
+pub(crate) struct GetBlockFilterResponse {
+    /// `bip158` block filter (hex).
+    pub filter: String,
+    /// `bip158` filter header.
+    pub header: bip158::FilterHeader,
+}
+
+impl GetBlockFilterResponse {
+    /// Into model.
+    pub fn into_model(self) -> Result<GetBlockFilter, GetBlockFilterError> {
+        use bitcoin::hex::FromHex;
+        let GetBlockFilterResponse { filter, header } = self;
+        let data = <Vec<u8> as FromHex>::from_hex(&filter).map_err(GetBlockFilterError::Filter)?;
+        let filter = bip158::BlockFilter::new(&data);
+
+        Ok(GetBlockFilter { filter, header })
+    }
+}
+
+/// Response to `getblockfilter`.
+#[derive(Debug, Clone, PartialEq)]
+pub struct GetBlockFilter {
+    /// `bip158` block filter.
+    pub filter: bip158::BlockFilter,
+    /// `bip158` filter header.
+    pub header: bip158::FilterHeader,
+}
 
 /// Request of `importdescriptors`.
 #[derive(Debug, Clone, Serialize, Default)]

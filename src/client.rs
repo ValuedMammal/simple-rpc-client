@@ -10,15 +10,13 @@ use bitcoin::{Address, Amount, Block, BlockHash, Transaction, Txid};
 
 use corepc_client::bitcoin;
 use corepc_client::client_sync::Error;
-use corepc_client::types::model::{
-    GetBlockFilter, GetBlockHeaderVerbose, GetBlockVerboseOne, GetBlockchainInfo,
-};
+use corepc_client::types::model::{GetBlockHeaderVerbose, GetBlockVerboseOne, GetBlockchainInfo};
 use corepc_client::types::v29;
 use jsonrpc::Transport;
 use jsonrpc::{serde, serde_json};
 use serde_json::json;
 
-use crate::types::{ImportDescriptorsRequest, ImportDescriptorsResponse};
+use crate::types::{GetBlockFilter, ImportDescriptorsRequest, ImportDescriptorsResponse};
 
 #[cfg(feature = "28_0")]
 pub mod v28;
@@ -139,7 +137,8 @@ impl Client {
 
     /// Get block filter.
     pub fn get_block_filter(&self, hash: &BlockHash) -> Result<GetBlockFilter, Error> {
-        let res: v29::GetBlockFilter = self.call("getblockfilter", &[json!(hash)])?;
+        use crate::types::GetBlockFilterResponse;
+        let res: GetBlockFilterResponse = self.call("getblockfilter", &[json!(hash)])?;
         Ok(res.into_model().unwrap())
     }
 
