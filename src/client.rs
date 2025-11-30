@@ -143,7 +143,14 @@ impl Client {
         Ok(res.into_model().unwrap())
     }
 
-    /// Get block.
+    /// Get a serialized, hex-encoded raw [`Block`] by given `hash`.
+    pub fn get_block_raw(&self, hash: &BlockHash) -> Result<String, Error> {
+        use v29::GetBlockVerboseZero as GetBlock;
+        let res: GetBlock = self.call("getblock", &[json!(hash), json!(0)])?;
+        Ok(res.0)
+    }
+
+    /// Get a bitcoin [`Block`] by `hash`.
     pub fn get_block(&self, hash: &BlockHash) -> Result<Block, Error> {
         use v29::GetBlockVerboseZero as GetBlock;
         let res: GetBlock = self.call("getblock", &[json!(hash), json!(0)])?;

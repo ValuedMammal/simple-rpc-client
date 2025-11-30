@@ -52,6 +52,9 @@ fn test_get_block_filter() {
 #[test]
 fn test_get_block() {
     let hash = CLIENT.get_best_block_hash().unwrap();
+    let res = CLIENT.get_block_raw(&hash).unwrap();
+    dbg!(res);
+
     let res = CLIENT.get_block(&hash).unwrap();
     dbg!(res);
 }
