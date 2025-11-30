@@ -43,7 +43,7 @@ bitcoin-cli -regtest -generate 101 > /dev/null
 # Run integration tests.
 cargo test --test test_rpc_client -- --test-threads=1
 # cargo test --test test_rpc_client -- --test-threads=1 --show-output
-# cargo test --test test_rpc_client -- test_get_blockchain_info --test-threads=1
+# cargo test --test test_rpc_client -- test_get_block_filter --exact --test-threads=1 --show-output
 
 # Stop daemon.
 bitcoin-cli -regtest stop
