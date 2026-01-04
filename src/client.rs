@@ -189,6 +189,28 @@ impl Client {
     ) -> Result<Vec<ImportDescriptorsResponse>, Error> {
         self.call("importdescriptors", &[json!(requests)])
     }
+
+    /// Estimate smart fee.
+    pub fn estimate_smart_fee(&self, blocks: u32) -> Result<FeeRate, Error> {
+        let res: v29::EstimateSmartFee = self.call("estimatesmartfee", &[json!(blocks)])?;
+        if let Some(e) = res.errors.and_then(|v| v.first().cloned()) {
+            return Err(Error::Returned(e));
+        }
+        let btc_kvb = res.fee_rate.ok_or(Error::Returned(
+            "estimatesmartfee returned no feerate".to_string(),
+        ))?;
+        // This is a conservative upper bound on the maximum feerate that is valid by consensus,
+        // since there cannot be more than 21M BTC in fees per 1Mb block.
+        if btc_kvb > Amount::MAX_MONEY.to_btc() / 1000.0 {
+            return Err(Error::Returned(format!(
+                "invalid feerate: {btc_kvb} BTC/kB"
+            )));
+        }
+        // 1 sat/vb = 0.00001000 btc/kvb * 10^8 sat/btc * 0.25 wu/sat = 250 sat/kwu
+        let sat_kwu = (btc_kvb * 25_000_000.0).round() as u64;
+
+        Ok(FeeRate::from_sat_per_kwu(sat_kwu))
+    }
 }
 
 #[cfg(not(feature = "28_0"))]
