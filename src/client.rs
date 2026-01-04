@@ -1,16 +1,17 @@
 //! [`Client`].
 
-#![allow(unused_imports)]
-
+use std::collections::BTreeMap;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::PathBuf;
 
-use bitcoin::{Address, Amount, Block, BlockHash, Transaction, Txid};
+use bitcoin::{Address, Amount, Block, BlockHash, FeeRate, Transaction, Txid};
 
 use corepc_client::bitcoin;
 use corepc_client::client_sync::Error;
-use corepc_client::types::model::{GetBlockHeaderVerbose, GetBlockVerboseOne, GetBlockchainInfo};
+use corepc_client::types::model::{
+    GetBlockHeaderVerbose, GetBlockVerboseOne, GetBlockchainInfo, MempoolEntry,
+};
 use corepc_client::types::v29;
 use jsonrpc::Transport;
 use jsonrpc::{serde, serde_json};
@@ -159,6 +160,12 @@ impl Client {
     /// Get raw mempool.
     pub fn get_raw_mempool(&self) -> Result<Vec<Txid>, Error> {
         let res: v29::GetRawMempool = self.call("getrawmempool", &[])?;
+        Ok(res.into_model().unwrap().0)
+    }
+
+    /// Get raw mempool (verbose).
+    pub fn get_raw_mempool_verbose(&self) -> Result<BTreeMap<Txid, MempoolEntry>, Error> {
+        let res: v29::GetRawMempoolVerbose = self.call("getrawmempool", &[json!(true)])?;
         Ok(res.into_model().unwrap().0)
     }
 
