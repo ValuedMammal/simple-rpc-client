@@ -56,7 +56,7 @@ impl Auth {
 }
 
 impl Client {
-    /// Creates a `simple_http` client with `user` and `pass`.
+    /// Creates a `simple_http` client with `url` and `auth`.
     ///
     /// This can fail if we are unable to read the configured [`Auth::CookieFile`].
     pub fn new(url: &str, auth: Auth) -> Result<Self, Error> {
