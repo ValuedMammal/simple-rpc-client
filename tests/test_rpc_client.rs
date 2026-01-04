@@ -1,3 +1,4 @@
+use bitcoin::{Address, Amount};
 use corepc_client::bitcoin;
 use std::str::FromStr;
 
@@ -68,7 +69,6 @@ fn test_get_block_verbose() {
 
 #[test]
 fn test_send_to_address() {
-    use bitcoin::{Address, Amount};
     let addr = Address::from_str("bcrt1qrvyf5r90k9ky7ennhp3grtus22q0zvzx8qdsad")
         .unwrap()
         .assume_checked();
@@ -80,6 +80,13 @@ fn test_send_to_address() {
 fn test_get_raw_mempool() {
     let res = CLIENT.get_raw_mempool().unwrap();
     dbg!(&res);
+
+    // Test `get_raw_mempool_verbose`
+    let addr = bitcoin::Address::from_str("bcrt1q84x70t2uf03r6tu9wqphwzygh7hjmps8entc5y")
+        .unwrap()
+        .assume_checked();
+    let _ = CLIENT.send_to_address(&addr, Amount::ONE_BTC).unwrap();
+    let _res = dbg!(CLIENT.get_raw_mempool_verbose().unwrap());
 }
 
 #[test]
